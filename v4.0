@@ -1,0 +1,77 @@
+import cryptocode
+import PySimpleGUI as sg
+import pyperclip
+import subprocess
+
+def check_decode():
+	try:
+		with open("decode.exe",'r') as f:pass
+	except Exception as e:
+		exe=False
+	else:
+		exe=True
+	return exe
+
+dec=check_decode()
+
+t1=True
+t2=True
+if dec:a="解密工具"
+else:a="!解密工具"
+layout=[
+[sg.Menu([['选项',a]])],
+[sg.T('字符串：   ',background_color="white",text_color="black"),sg.In('',key='字符')],
+[sg.T('密码：       ',background_color="white",text_color="black"),
+	sg.In('',key='密码',password_char="*",size=(38,0)),
+	sg.B(image_filename="IcoEyeClo.png",key='显示隐藏密码1',button_color="white")],
+[sg.T('确认密码：',background_color="white",text_color="black"),
+	sg.In('',key='确认密码',password_char="*",size=(38,0)),
+	sg.B(image_filename="IcoEyeClo.png",key='显示隐藏密码2',button_color="white")],
+[sg.T('加密信息：',background_color="white",text_color="black"),sg.In('',key='加密信息',size=(38,0)),sg.B("复制")],
+[sg.T('',key='text',background_color="white",text_color="red")],
+[sg.B('加密',bind_return_key=True),sg.B('全部清空'),sg.B('退出')]
+]
+window=sg.Window('字符串加密v4.0.0',layout,keep_on_top=True,background_color="white")
+
+while True:
+	event,values=window.read()
+	if event==None or event=='退出':
+		break
+	if event=="显示隐藏密码1":
+		if t1:
+			window['密码'].update(password_char='')
+			window['显示隐藏密码1'].update(image_filename="IcoEyeOpe.png",)
+			t1=False
+		else:
+			window['密码'].update(password_char='*')
+			window['显示隐藏密码1'].update(image_filename="IcoEyeClo.png",)
+			t1=True
+	if event=="显示隐藏密码2":
+		if t2:
+			window['确认密码'].update(password_char='')
+			window['显示隐藏密码2'].update(image_filename="IcoEyeOpe.png",)
+			t2=False
+		else:
+			window['确认密码'].update(password_char='*')
+			window['显示隐藏密码2'].update(image_filename="IcoEyeClo.png",)
+			t2=True
+	if event=="加密":
+		if values['密码'] != values["确认密码"]:
+			window['text'].update("两次输入的密码不一致！")
+		else:
+			window['text'].update("")
+			strcde=cryptocode.encrypt(str(values['字符']),str(values['确认密码']))
+			window["加密信息"].update(strcde)
+	if event=="复制":
+		pyperclip.copy(values["加密信息"])
+	if event=="解密工具":
+		dec=check_decode()
+		if dec:subprocess.Popen("decode.exe")
+	if event=="全部清空":
+		window['字符'].update('')
+		window['密码'].update('')
+		window['确认密码'].update('')
+		window['加密信息'].update('')
+
+
+window.close()
