@@ -1,0 +1,38 @@
+import cryptocode
+import json
+import PySimpleGUI as sg
+import pyperclip
+def asf(se):
+	layout1=[
+		[sg.T('字符串已加密完成')],
+		[sg.B('复制')]
+		]
+	window1=sg.Window('加密成功',layout1,keep_on_top=True)
+	while True:
+		event1,values1=window1.read()
+		if event1==None:
+			break
+		if event1=='复制':			
+			pyperclip.copy(se)
+			break
+
+layout=[
+[sg.T('字符串：'),sg.In('',key='__Input__')],
+[sg.T('密码：'),sg.In('',key='__password__')],
+[sg.B('确定',bind_return_key=True),sg.B('取消')]
+]
+window=sg.Window('字符串加密 v1.0',layout,keep_on_top=True)
+while True:
+	event,values=window.read()
+	if event==None or event=='取消':
+		na=1
+		break
+	if event=='确定':
+		se=cryptocode.encrypt(str(values['__Input__']),str(values['__password__']))
+		na=0	
+		break
+
+if na==0:
+	asf(se)
+
+window.close()
